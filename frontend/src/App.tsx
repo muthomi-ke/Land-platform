@@ -78,7 +78,7 @@ const App: React.FC = () => {
       };
     }
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: sub } = supabase.auth.onAuthStateChange((_event: string, nextSession: any) => {
       if (!mounted) return;
       setSession(nextSession);
     });
@@ -92,9 +92,9 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen text-slate-900 dark:text-white bg-white dark:bg-slate-950 transition-colors duration-300">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="pointer-events-none absolute -left-40 top-[-10rem] h-[28rem] w-[28rem] rounded-full bg-brand-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute -left-40 top-[-10rem] h-[28rem] w-[28rem] rounded-full bg-blue-500/10 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-12rem] right-[-5rem] h-[26rem] w-[26rem] rounded-full bg-emerald-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-slate-900 via-slate-950/40 to-transparent dark:from-slate-900 dark:via-slate-950/40 dark:to-transparent from-slate-100 via-white to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-slate-100 via-white to-transparent dark:from-slate-900 dark:via-slate-950/40 dark:to-transparent" />
       </div>
 
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 pb-16 pt-6 sm:px-6 lg:px-10">
@@ -130,6 +130,7 @@ const App: React.FC = () => {
 };
 
 import { ThemeToggle } from './components/ThemeToggle';
+import Logo from './components/Logo';
 
 const NavBar: React.FC<{ session: Session | null }> = ({ session }) => {
   const location = useLocation();
@@ -149,15 +150,9 @@ const NavBar: React.FC<{ session: Session | null }> = ({ session }) => {
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="relative z-50 flex items-center justify-between rounded-full border border-slate-800/70 bg-slate-900/80 px-4 py-2 shadow-lg shadow-slate-950/40 backdrop-blur-xl sm:px-5 dark:border-slate-800/70 dark:bg-slate-900/80 bg-white/80 border-slate-200/70"
       >
-        <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-brand-500 to-emerald-400 shadow-md shadow-emerald-500/40">
-            <Leaf className="h-4 w-4 text-slate-950" />
-          </div>
-          <div className="leading-tight">
-            <span className="text-sm font-semibold tracking-tight sm:text-base">LandPortal</span>
-            <p className="text-[10px] text-slate-400 sm:text-xs">Curated land, anywhere.</p>
-          </div>
-        </div>
+        <Link to="/" className="flex items-center gap-2">
+          <Logo />
+        </Link>
 
         {/* Desktop Nav */}
         <nav className="hidden items-center gap-6 text-xs text-slate-600 dark:text-slate-400 sm:flex sm:text-sm">
@@ -228,7 +223,7 @@ const NavBar: React.FC<{ session: Session | null }> = ({ session }) => {
           {!isAuthed ? (
             <Link
               to="/auth"
-              className="hidden rounded-full border border-slate-300 dark:border-slate-700 px-3 py-1 text-xs font-medium text-slate-900 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-slate-800 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm"
+              className="hidden rounded-full border border-blue-300 dark:border-blue-700 px-3 py-1 text-xs font-medium text-blue-900 dark:text-blue-200 transition hover:bg-blue-100 dark:hover:bg-blue-900/50 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm"
             >
               Login
             </Link>
@@ -236,14 +231,14 @@ const NavBar: React.FC<{ session: Session | null }> = ({ session }) => {
             <button
               type="button"
               onClick={handleLogout}
-              className="hidden rounded-full border border-slate-300 dark:border-slate-700 px-3 py-1 text-xs font-medium text-slate-900 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-slate-800 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm"
+              className="hidden rounded-full border border-blue-300 dark:border-blue-700 px-3 py-1 text-xs font-medium text-blue-900 dark:text-blue-200 transition hover:bg-blue-100 dark:hover:bg-blue-900/50 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm"
             >
               Logout
           </button>
           )}
           <Link
             to="/get-started"
-            className="hidden items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-950 shadow-md shadow-slate-950/40 transition hover:bg-slate-200 sm:inline-flex sm:px-4 sm:text-sm"
+            className="hidden items-center gap-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 px-3 py-1.5 text-xs font-semibold text-white shadow-md shadow-blue-500/40 transition hover:from-blue-700 hover:to-blue-600 sm:inline-flex sm:px-4 sm:text-sm"
           >
             Get started
             <Sparkles className="h-3.5 w-3.5 text-amber-500" />
@@ -251,7 +246,7 @@ const NavBar: React.FC<{ session: Session | null }> = ({ session }) => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-200 sm:hidden"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-blue-900 dark:bg-blue-900/50 dark:text-blue-200 sm:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <XIcon className="h-4 w-4" /> : <MenuIcon className="h-4 w-4" />}
@@ -1105,13 +1100,13 @@ const GetStartedPage: React.FC = () => {
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.7,
-        ease: [0.16, 1, 0.3, 1],
-        when: 'beforeChildren',
-        staggerChildren: 0.12
-      }
-    }
-  };
+        duration: 0.6,
+        ease: [0.16, 1, 0.3, 1] as const,
+        when: 'beforeChildren' as const,
+        staggerChildren: 0.1,
+      },
+    },
+  } as const;
 
   const cardVariants = {
     hidden: { opacity: 0, y: 24 },

@@ -8,7 +8,7 @@ export type Plot = {
   name: string;
   location: string;
   size: string;
-  price: number | string;
+  price: number;
   tag?: string;
   image_url?: string;
   media_urls?: string[];

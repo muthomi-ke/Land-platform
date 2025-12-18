@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '../lib/supabaseClient';
+import { Session } from '@supabase/supabase-js';
 import { FilterBar, type PlotFilters } from '../components/FilterBar';
 import { PlotCard, type Plot } from '../components/PlotCard';
 import { BadgeCheck, MapPin, Search, Sparkles, TrendingUp } from 'lucide-react';
@@ -24,9 +25,9 @@ const Hero: React.FC = () => {
         transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         className="max-w-xl"
       >
-        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-200 shadow shadow-emerald-500/20">
-          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-emerald-400/90">
-            <TrendingUp className="h-2.5 w-2.5 text-emerald-950" />
+        <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-2.5 py-1 text-[11px] font-medium text-blue-200 shadow shadow-blue-500/20">
+          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-400/90">
+            <TrendingUp className="h-2.5 w-2.5 text-blue-950" />
           </span>
           Land-backed yields from 6–12% in growth markets.
         </div>
@@ -36,17 +37,17 @@ const Hero: React.FC = () => {
         </h1>
 
         <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
-          Land Leverage surfaces vetted plots across fast-growing regions—zoned, titled, and ready
-          for your next home, farm, or long-term hold.
+          Land Leverage: Where smart investors secure prime land in high-growth areas. Zoned, titled,
+          and ready for your vision—be it a home, farm, or long-term investment.
         </p>
 
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <Link
             to="/get-started"
-            className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-950 shadow-md shadow-slate-950/40 transition hover:bg-slate-200"
+            className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-2 text-xs font-semibold text-white shadow-md shadow-blue-500/40 transition hover:from-blue-700 hover:to-blue-600"
           >
             Get started
-            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+            <Sparkles className="h-3.5 w-3.5 text-white/90" />
           </Link>
           <Link
             to="/investments"
@@ -159,17 +160,15 @@ const FeaturedPlots: React.FC = () => {
           query = query.eq('category', filters.category);
         }
 
-        // Handle price filters
-        const minPrice = Number(filters.minPriceKes);
-        if (filters.minPriceKes.trim() !== '' && !Number.isNaN(minPrice)) {
-          console.log('Filtering by min price:', minPrice);
-          query = query.gte('price', minPrice);
+        // Handle price filters - already numbers from the filter component
+        if (filters.minPriceKes) {
+          console.log('Filtering by min price:', filters.minPriceKes);
+          query = query.gte('price', filters.minPriceKes);
         }
 
-        const maxPrice = Number(filters.maxPriceKes);
-        if (filters.maxPriceKes.trim() !== '' && !Number.isNaN(maxPrice)) {
-          console.log('Filtering by max price:', maxPrice);
-          query = query.lte('price', maxPrice);
+        if (filters.maxPriceKes) {
+          console.log('Filtering by max price:', filters.maxPriceKes);
+          query = query.lte('price', filters.maxPriceKes);
         }
 
         console.log('Executing query...');
