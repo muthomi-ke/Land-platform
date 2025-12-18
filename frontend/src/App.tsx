@@ -19,6 +19,11 @@ import {
 import { supabase } from './lib/supabaseClient';
 import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import React from 'react';
+import Auth from './pages/Auth';
+import type { Session } from '@supabase/supabase-js';
+import Home from './pages/Home';
+import Investments from './pages/Investments';
+import AddPlot from './pages/AddPlot';
 
 type Plot = {
   id: number;
@@ -48,6 +53,36 @@ type SellFormState = {
 
 const App: React.FC = () => {
   const location = useLocation();
+  const [session, setSession] = React.useState<Session | null>(null);
+
+  React.useEffect(() => {
+    let mounted = true;
+
+    const init = async () => {
+      if (!supabase) return;
+      const { data } = await supabase.auth.getSession();
+      if (!mounted) return;
+      setSession(data.session ?? null);
+    };
+
+    void init();
+
+    if (!supabase) {
+      return () => {
+        mounted = false;
+      };
+    }
+
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      if (!mounted) return;
+      setSession(nextSession);
+    });
+
+    return () => {
+      mounted = false;
+      sub?.subscription?.unsubscribe?.();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen text-slate-900 dark:text-white bg-white dark:bg-slate-950 transition-colors duration-300">
@@ -58,19 +93,14 @@ const App: React.FC = () => {
       </div>
 
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 pb-16 pt-6 sm:px-6 lg:px-10">
-        <NavBar />
+        <NavBar session={session} />
 
         <main className="mt-10 flex-1">
           <Routes location={location}>
-            <Route
-              path="/"
-              element={
-                <div className="flex flex-col gap-14 lg:flex-row lg:mt-6">
-                  <Hero />
-                  <FeaturedPlots />
-                </div>
-              }
-            />
+            <Route path="/" element={<Home />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/investments" element={<Investments />} />
+            <Route path="/add-plot" element={<AddPlot session={session} />} />
             <Route path="/get-started" element={<GetStartedPage />} />
             <Route path="/sell" element={<SellForm />} />
             <Route path="/admin" element={<AdminPage />} />
@@ -90,9 +120,15 @@ const App: React.FC = () => {
 
 import { ThemeToggle } from './components/ThemeToggle';
 
-const NavBar: React.FC = () => {
+const NavBar: React.FC<{ session: Session | null }> = ({ session }) => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const isAuthed = Boolean(session?.user);
+
+  const handleLogout = async () => {
+    if (!supabase) return;
+    await supabase.auth.signOut();
+  };
 
   return (
     <>
@@ -122,13 +158,24 @@ const NavBar: React.FC = () => {
           >
             Discover
           </Link>
-          <button
-            type="button"
-            className="transition hover:text-slate-900 dark:hover:text-slate-50"
-            // Placeholder for future investment route
+          <Link
+            to="/investments"
+            className={`transition hover:text-slate-900 dark:hover:text-slate-50 ${
+              location.pathname === '/investments' ? 'text-slate-900 dark:text-slate-50' : ''
+            }`}
           >
             Investment
-          </button>
+          </Link>
+          {isAuthed && (
+            <Link
+              to="/add-plot"
+              className={`transition hover:text-slate-900 dark:hover:text-slate-50 ${
+                location.pathname === '/add-plot' ? 'text-slate-900 dark:text-slate-50' : ''
+              }`}
+            >
+              Add Listing
+            </Link>
+          )}
           <Link
             to="/sell"
             className={`transition hover:text-slate-900 dark:hover:text-slate-50 ${
@@ -151,9 +198,22 @@ const NavBar: React.FC = () => {
           <div className="hidden sm:block">
             <ThemeToggle />
           </div>
-          <button className="hidden rounded-full border border-slate-300 dark:border-slate-700 px-3 py-1 text-xs font-medium text-slate-900 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-slate-800 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm">
-            Log in
-          </button>
+          {!isAuthed ? (
+            <Link
+              to="/auth"
+              className="hidden rounded-full border border-slate-300 dark:border-slate-700 px-3 py-1 text-xs font-medium text-slate-900 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-slate-800 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm"
+            >
+              Login
+            </Link>
+          ) : (
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="hidden rounded-full border border-slate-300 dark:border-slate-700 px-3 py-1 text-xs font-medium text-slate-900 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-slate-800 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm"
+            >
+              Logout
+            </button>
+          )}
           <Link
             to="/get-started"
             className="hidden items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-950 shadow-md shadow-slate-950/40 transition hover:bg-slate-200 sm:inline-flex sm:px-4 sm:text-sm"
@@ -191,10 +251,28 @@ const NavBar: React.FC = () => {
               Discover
               <TrendingUp className="h-4 w-4" />
             </Link>
-            <button className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 text-left">
+            <Link
+              to="/investments"
+              onClick={() => setIsMenuOpen(false)}
+              className={`flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 ${
+                location.pathname === '/investments' ? 'text-emerald-400 font-medium' : ''
+              }`}
+            >
               Investment
-              <span className="text-[10px] uppercase tracking-wider text-slate-500">Coming soon</span>
-            </button>
+              <span className="text-[10px] uppercase tracking-wider text-slate-500">KES</span>
+            </Link>
+            {isAuthed && (
+              <Link
+                to="/add-plot"
+                onClick={() => setIsMenuOpen(false)}
+                className={`flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 ${
+                  location.pathname === '/add-plot' ? 'text-emerald-400 font-medium' : ''
+                }`}
+              >
+                Add Listing
+                <Edit3 className="h-4 w-4" />
+              </Link>
+            )}
             <Link
               to="/sell"
               onClick={() => setIsMenuOpen(false)}
@@ -220,9 +298,26 @@ const NavBar: React.FC = () => {
               <ThemeToggle />
             </div>
             <div className="mt-2 grid grid-cols-2 gap-3">
-              <button className="rounded-xl border border-slate-300 dark:border-slate-700 py-2.5 text-center font-medium text-slate-900 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">
-                Log in
-              </button>
+              {!isAuthed ? (
+                <Link
+                  to="/auth"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 py-2.5 text-center font-medium text-slate-900 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  Login
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 py-2.5 text-center font-medium text-slate-900 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+                >
+                  Logout
+                </button>
+              )}
               <Link
                 to="/get-started"
                 onClick={() => setIsMenuOpen(false)}
