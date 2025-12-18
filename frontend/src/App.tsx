@@ -24,6 +24,7 @@ import type { Session } from '@supabase/supabase-js';
 import Home from './pages/Home';
 import Investments from './pages/Investments';
 import AddPlot from './pages/AddPlot';
+import PlotDetails from './pages/PlotDetails';
 
 type Plot = {
   id: number;
@@ -101,6 +102,7 @@ const App: React.FC = () => {
             <Route path="/auth" element={<Auth />} />
             <Route path="/investments" element={<Investments />} />
             <Route path="/add-plot" element={<AddPlot session={session} />} />
+            <Route path="/plots/:id" element={<PlotDetails />} />
             <Route path="/get-started" element={<GetStartedPage />} />
             <Route path="/sell" element={<SellForm />} />
             <Route path="/admin" element={<AdminPage />} />

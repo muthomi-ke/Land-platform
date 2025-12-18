@@ -143,7 +143,7 @@ const FeaturedPlots: React.FC = () => {
 
         let query = supabase
           .from('plots')
-          .select('id, name, location, size, price, tag, image_url, category, seller_id')
+          .select('id, name, location, size, price, tag, image_url, media_urls, category, seller_id, seller_phone, lat, lng')
           .limit(24);
 
         const locationTerm = filters.location.trim();

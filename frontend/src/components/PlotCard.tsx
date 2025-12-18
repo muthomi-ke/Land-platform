@@ -1,6 +1,7 @@
 import React from 'react';
 import { MessageCircle, MapPin } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
+import { Link } from 'react-router-dom';
 
 export type Plot = {
   id: number;
@@ -10,18 +11,19 @@ export type Plot = {
   price: number | string;
   tag?: string;
   image_url?: string;
+  media_urls?: string[];
   category?: string;
   seller_id?: string | null;
+  seller_phone?: string | null;
+  lat?: number | null;
+  lng?: number | null;
 };
 
 type Props = {
   plot: Plot;
-  whatsappPhone?: string; // easy to override later per-seller
 };
 
-const DEFAULT_WHATSAPP_PHONE = '+254700000000';
-
-export const PlotCard: React.FC<Props> = ({ plot, whatsappPhone = DEFAULT_WHATSAPP_PHONE }) => {
+export const PlotCard: React.FC<Props> = ({ plot }) => {
   const onWhatsApp = async () => {
     try {
       if (supabase) {
@@ -34,8 +36,8 @@ export const PlotCard: React.FC<Props> = ({ plot, whatsappPhone = DEFAULT_WHATSA
     } catch {
       // ignore lead tracking failures; still open WhatsApp
     } finally {
-      const phoneDigits = whatsappPhone.replace(/[^\d]/g, '');
-      const msg = `I_am_interested_in_your_plot:_[${plot.name}]`;
+      const phoneDigits = String(plot.seller_phone ?? '').replace(/[^\d]/g, '');
+      const msg = `I_am_interested_in_[${plot.name}]`;
       const href = `https://wa.me/${phoneDigits}?text=${encodeURIComponent(msg)}`;
       window.open(href, '_blank', 'noopener,noreferrer');
     }
@@ -71,9 +73,11 @@ export const PlotCard: React.FC<Props> = ({ plot, whatsappPhone = DEFAULT_WHATSA
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="space-y-1">
-          <h3 className="line-clamp-1 text-sm font-semibold text-slate-900 dark:text-white">
-            {plot.name}
-          </h3>
+          <Link to={`/plots/${plot.id}`} className="block">
+            <h3 className="line-clamp-1 text-sm font-semibold text-slate-900 dark:text-white hover:underline">
+              {plot.name}
+            </h3>
+          </Link>
           <p className="flex items-center gap-1 text-[11px] text-slate-600 dark:text-slate-400">
             <MapPin className="h-3 w-3 text-slate-500" />
             {plot.location}
@@ -96,6 +100,7 @@ export const PlotCard: React.FC<Props> = ({ plot, whatsappPhone = DEFAULT_WHATSA
         <button
           type="button"
           onClick={onWhatsApp}
+          disabled={!plot.seller_phone}
           className="relative inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-500/15 px-4 py-2 text-sm font-semibold text-emerald-100 ring-1 ring-emerald-400/30 transition hover:bg-emerald-500/25"
         >
           <span className="pointer-events-none absolute inset-0 rounded-2xl opacity-70 blur-md bg-emerald-400/20 animate-pulse" />
@@ -104,9 +109,9 @@ export const PlotCard: React.FC<Props> = ({ plot, whatsappPhone = DEFAULT_WHATSA
             Chat on WhatsApp
           </span>
         </button>
-        <p className="text-[10px] text-slate-500">
-          WhatsApp lead tracking enabled · default number {DEFAULT_WHATSAPP_PHONE}
-        </p>
+        {!plot.seller_phone && (
+          <p className="text-[10px] text-slate-500">Seller WhatsApp number not set for this plot.</p>
+        )}
       </div>
     </article>
   );
