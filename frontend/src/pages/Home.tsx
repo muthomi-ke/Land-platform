@@ -133,52 +133,72 @@ const FeaturedPlots: React.FC = () => {
   React.useEffect(() => {
     const fetchPlots = async () => {
       try {
+        console.log('Fetching plots with filters:', filters);
         setLoading(true);
         setError(null);
 
         if (!supabase) {
-          setError('Data is not available – Supabase is not configured yet.');
+          const errorMsg = 'Supabase client is not initialized. Check your .env file.';
+          console.error(errorMsg);
+          setError(errorMsg);
           return;
         }
 
-        let query = supabase
-          .from('plots')
-          .select('id, name, location, size, price, tag, image_url, media_urls, category, seller_id, seller_phone, lat, lng')
-          .limit(24);
+        // Start building the query
+        let query = supabase.from('plots').select('*').limit(24);
 
-        const locationTerm = filters.location.trim();
+        // Add filters if they exist
+        const locationTerm = (filters.location || '').trim();
         if (locationTerm) {
+          console.log('Filtering by location:', locationTerm);
           query = query.ilike('location', `%${locationTerm}%`);
         }
 
-        if (filters.category !== 'All') {
+        if (filters.category && filters.category !== 'All') {
+          console.log('Filtering by category:', filters.category);
           query = query.eq('category', filters.category);
         }
 
-        const min = Number(filters.minPriceKes);
-        if (filters.minPriceKes.trim() !== '' && !Number.isNaN(min)) {
-          query = query.gte('price', min);
+        // Handle price filters
+        const minPrice = Number(filters.minPriceKes);
+        if (filters.minPriceKes.trim() !== '' && !Number.isNaN(minPrice)) {
+          console.log('Filtering by min price:', minPrice);
+          query = query.gte('price', minPrice);
         }
 
-        const max = Number(filters.maxPriceKes);
-        if (filters.maxPriceKes.trim() !== '' && !Number.isNaN(max)) {
-          query = query.lte('price', max);
+        const maxPrice = Number(filters.maxPriceKes);
+        if (filters.maxPriceKes.trim() !== '' && !Number.isNaN(maxPrice)) {
+          console.log('Filtering by max price:', maxPrice);
+          query = query.lte('price', maxPrice);
         }
 
-        const { data, error: supabaseError } = await query;
-        if (supabaseError) throw supabaseError;
+        console.log('Executing query...');
+        const { data, error: supabaseError, status } = await query;
+        
+        console.log('Query status:', status);
+        
+        if (supabaseError) {
+          console.error('Supabase query error:', supabaseError);
+          throw new Error(supabaseError.message);
+        }
 
-        setPlots((data as Plot[]) ?? []);
+        console.log('Fetched plots:', data);
+        setPlots((data as Plot[]) || []);
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Error fetching plots from Supabase', err);
-        setError('Unable to load plots right now.');
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load plots';
+        console.error('Error in fetchPlots:', errorMessage, err);
+        setError(`Error loading plots: ${errorMessage}`);
       } finally {
         setLoading(false);
       }
     };
 
-    void fetchPlots();
+    // Add a small delay to prevent too many requests while typing
+    const timer = setTimeout(() => {
+      void fetchPlots();
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, [filters.location, filters.minPriceKes, filters.maxPriceKes, filters.category]);
 
   return (

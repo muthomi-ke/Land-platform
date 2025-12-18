@@ -239,7 +239,7 @@ const NavBar: React.FC<{ session: Session | null }> = ({ session }) => {
               className="hidden rounded-full border border-slate-300 dark:border-slate-700 px-3 py-1 text-xs font-medium text-slate-900 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-slate-800 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm"
             >
               Logout
-            </button>
+          </button>
           )}
           <Link
             to="/get-started"
@@ -363,7 +363,7 @@ const NavBar: React.FC<{ session: Session | null }> = ({ session }) => {
                   className="rounded-xl border border-slate-300 dark:border-slate-700 py-2.5 text-center font-medium text-slate-900 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                 >
                   Logout
-                </button>
+              </button>
               )}
               <Link
                 to="/get-started"
