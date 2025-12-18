@@ -12,7 +12,9 @@ import {
   Sparkles,
   Trash2,
   TrendingUp,
-  Twitter
+  Twitter,
+  Menu as MenuIcon,
+  X as XIcon
 } from 'lucide-react';
 import { supabase } from './lib/supabaseClient';
 import { Link, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
@@ -48,7 +50,7 @@ const App: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen text-slate-50 dark:text-slate-50 text-slate-900 bg-white dark:bg-slate-950 transition-colors duration-300">
+    <div className="min-h-screen text-slate-900 dark:text-white bg-white dark:bg-slate-950 transition-colors duration-300">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="pointer-events-none absolute -left-40 top-[-10rem] h-[28rem] w-[28rem] rounded-full bg-brand-500/20 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-12rem] right-[-5rem] h-[26rem] w-[26rem] rounded-full bg-emerald-500/10 blur-3xl" />
@@ -111,34 +113,34 @@ const NavBar: React.FC = () => {
         </div>
 
         {/* Desktop Nav */}
-        <nav className="hidden items-center gap-6 text-xs text-slate-300 sm:flex sm:text-sm">
+        <nav className="hidden items-center gap-6 text-xs text-slate-600 dark:text-slate-400 sm:flex sm:text-sm">
           <Link
             to="/"
-            className={`transition hover:text-slate-50 ${
-              location.pathname === '/' ? 'text-slate-50' : ''
+            className={`transition hover:text-slate-900 dark:hover:text-slate-50 ${
+              location.pathname === '/' ? 'text-slate-900 dark:text-slate-50' : ''
             }`}
           >
             Discover
           </Link>
           <button
             type="button"
-            className="transition hover:text-slate-50"
+            className="transition hover:text-slate-900 dark:hover:text-slate-50"
             // Placeholder for future investment route
           >
             Investment
           </button>
           <Link
             to="/sell"
-            className={`transition hover:text-slate-50 ${
-              location.pathname === '/sell' ? 'text-slate-50' : ''
+            className={`transition hover:text-slate-900 dark:hover:text-slate-50 ${
+              location.pathname === '/sell' ? 'text-slate-900 dark:text-slate-50' : ''
             }`}
           >
             Sell land
           </Link>
           <Link
             to="/admin"
-            className={`transition hover:text-slate-50 ${
-              location.pathname === '/admin' ? 'text-slate-50' : ''
+            className={`transition hover:text-slate-900 dark:hover:text-slate-50 ${
+              location.pathname === '/admin' ? 'text-slate-900 dark:text-slate-50' : ''
             }`}
           >
             Admin
@@ -149,7 +151,7 @@ const NavBar: React.FC = () => {
           <div className="hidden sm:block">
             <ThemeToggle />
           </div>
-          <button className="hidden rounded-full border border-slate-700 px-3 py-1 text-xs font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm">
+          <button className="hidden rounded-full border border-slate-300 dark:border-slate-700 px-3 py-1 text-xs font-medium text-slate-900 dark:text-slate-200 transition hover:bg-slate-100 dark:hover:bg-slate-800 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm">
             Log in
           </button>
           <Link
@@ -162,10 +164,10 @@ const NavBar: React.FC = () => {
 
           {/* Mobile Menu Toggle */}
           <button
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-slate-200 sm:hidden"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-900 dark:bg-slate-800 dark:text-slate-200 sm:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            {isMenuOpen ? <XIcon className="h-4 w-4" /> : <MenuIcon className="h-4 w-4" />}
           </button>
         </div>
       </motion.header>
@@ -176,27 +178,27 @@ const NavBar: React.FC = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="absolute inset-x-0 top-20 z-40 mx-4 rounded-3xl border border-slate-800/70 bg-slate-900/95 p-6 shadow-2xl backdrop-blur-xl sm:hidden"
+          className="absolute inset-x-0 top-20 z-40 mx-4 rounded-3xl border border-slate-200 dark:border-slate-800/70 bg-white dark:bg-slate-900/95 p-6 shadow-2xl backdrop-blur-xl sm:hidden"
         >
-          <nav className="flex flex-col gap-4 text-sm text-slate-300">
+          <nav className="flex flex-col gap-4 text-sm text-slate-600 dark:text-slate-400">
             <Link
               to="/"
               onClick={() => setIsMenuOpen(false)}
-              className={`flex items-center justify-between border-b border-slate-800 pb-2 ${
+              className={`flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 ${
                 location.pathname === '/' ? 'text-emerald-400 font-medium' : ''
               }`}
             >
               Discover
               <TrendingUp className="h-4 w-4" />
             </Link>
-            <button className="flex items-center justify-between border-b border-slate-800 pb-2 text-left">
+            <button className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 text-left">
               Investment
               <span className="text-[10px] uppercase tracking-wider text-slate-500">Coming soon</span>
             </button>
             <Link
               to="/sell"
               onClick={() => setIsMenuOpen(false)}
-              className={`flex items-center justify-between border-b border-slate-800 pb-2 ${
+              className={`flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 ${
                 location.pathname === '/sell' ? 'text-emerald-400 font-medium' : ''
               }`}
             >
@@ -206,7 +208,7 @@ const NavBar: React.FC = () => {
             <Link
               to="/admin"
               onClick={() => setIsMenuOpen(false)}
-              className={`flex items-center justify-between border-b border-slate-800 pb-2 ${
+              className={`flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 ${
                 location.pathname === '/admin' ? 'text-emerald-400 font-medium' : ''
               }`}
             >
@@ -218,7 +220,7 @@ const NavBar: React.FC = () => {
               <ThemeToggle />
             </div>
             <div className="mt-2 grid grid-cols-2 gap-3">
-              <button className="rounded-xl border border-slate-700 py-2.5 text-center font-medium text-slate-200 hover:bg-slate-800">
+              <button className="rounded-xl border border-slate-300 dark:border-slate-700 py-2.5 text-center font-medium text-slate-900 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">
                 Log in
               </button>
               <Link
@@ -252,11 +254,11 @@ const Hero: React.FC = () => {
           Land-backed yields from 6–12% in growth markets.
         </div>
 
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-50 sm:text-4xl lg:text-5xl">
+        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
           Own the ground where the next decade is built.
         </h1>
 
-        <p className="mt-4 text-sm leading-relaxed text-slate-300 sm:text-base">
+        <p className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-400 sm:text-base">
           LandPortal surfaces vetted plots across fast-growing regions—zoned, titled, and ready for
           your next home, farm, or long-term hold. Explore like Airbnb. Invest like an insider.
         </p>
@@ -295,28 +297,28 @@ const SearchCard: React.FC = () => {
       initial={{ opacity: 0, y: 18 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-      className="mt-8 max-w-xl rounded-3xl border border-slate-800/70 bg-slate-900/80 p-4 shadow-soft-2xl backdrop-blur-xl sm:p-5"
+      className="mt-8 max-w-xl rounded-3xl border border-slate-200 dark:border-slate-800/70 bg-white dark:bg-slate-900/80 p-4 shadow-soft-2xl backdrop-blur-xl sm:p-5"
     >
       <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 text-xs text-slate-300 sm:text-sm">
+        <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 sm:text-sm">
           <MapPin className="h-4 w-4 text-brand-400" />
           <span className="font-medium">Search plots by location</span>
         </div>
-        <span className="rounded-full bg-slate-800 px-2 py-1 text-[10px] text-slate-400 sm:text-[11px]">
+        <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-1 text-[10px] text-slate-600 dark:text-slate-400 sm:text-[11px]">
           Zoned, titled & verified
         </span>
       </div>
 
-      <div className="mt-4 flex flex-col gap-3 rounded-2xl bg-slate-950/60 p-3 ring-1 ring-slate-800 sm:flex-row sm:items-center sm:gap-4 sm:p-3.5">
+      <div className="mt-4 flex flex-col gap-3 rounded-2xl bg-white dark:bg-slate-950/60 p-3 ring-1 ring-slate-300 dark:ring-slate-800 sm:flex-row sm:items-center sm:gap-4 sm:p-3.5">
         <div className="flex-1">
           <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
             Location
           </label>
-          <div className="mt-1 flex items-center gap-2 rounded-xl bg-slate-900/80 px-3 py-2 ring-1 ring-slate-700 focus-within:ring-brand-400">
+          <div className="mt-1 flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900/80 px-3 py-2 ring-1 ring-slate-300 dark:ring-slate-700 focus-within:ring-brand-400">
             <Search className="h-3.5 w-3.5 text-slate-500" />
             <input
               placeholder="City, region or coordinates"
-              className="w-full bg-transparent text-sm text-slate-50 placeholder:text-slate-500 focus:outline-none"
+              className="w-full bg-transparent text-sm text-slate-900 dark:text-white placeholder:text-slate-500 focus:outline-none"
             />
           </div>
         </div>
@@ -326,7 +328,7 @@ const SearchCard: React.FC = () => {
             <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
               Use case
             </label>
-            <select className="mt-1 w-full rounded-xl bg-slate-900/80 px-3 py-2 text-base text-slate-200 ring-1 ring-slate-700 focus:outline-none focus:ring-brand-400 sm:text-sm">
+            <select className="mt-1 w-full rounded-xl bg-white dark:bg-slate-900/80 px-3 py-2 text-base text-slate-900 dark:text-slate-200 ring-1 ring-slate-300 dark:ring-slate-700 focus:outline-none focus:ring-brand-400 sm:text-sm">
               <option>Homestead</option>
               <option>Investment</option>
               <option>Farm & ranch</option>
@@ -337,7 +339,7 @@ const SearchCard: React.FC = () => {
             <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
               Budget
             </label>
-            <select className="mt-1 w-full rounded-xl bg-slate-900/80 px-3 py-2 text-base text-slate-200 ring-1 ring-slate-700 focus:outline-none focus:ring-brand-400 sm:text-sm">
+            <select className="mt-1 w-full rounded-xl bg-white dark:bg-slate-900/80 px-3 py-2 text-base text-slate-900 dark:text-slate-200 ring-1 ring-slate-300 dark:ring-slate-700 focus:outline-none focus:ring-brand-400 sm:text-sm">
               <option>Up to $150k</option>
               <option>$150k – $350k</option>
               <option>$350k – $750k</option>
@@ -415,7 +417,7 @@ const FeaturedPlots: React.FC = () => {
 
         <div className="mt-3 grid gap-3">
           {loading && (
-            <div className="rounded-2xl border border-slate-800/80 bg-slate-900/80 p-4 text-xs text-slate-400">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800/80 bg-white dark:bg-slate-900/80 p-4 text-xs text-slate-600 dark:text-slate-400">
               Loading featured plots...
             </div>
           )}
@@ -434,7 +436,7 @@ const FeaturedPlots: React.FC = () => {
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25 + index * 0.08, duration: 0.5 }}
-                className="group flex flex-col cursor-pointer overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/80 shadow-md shadow-slate-950/60 backdrop-blur-xl transition hover:border-brand-400/70 hover:bg-slate-900 sm:flex-row"
+                className="group flex flex-col cursor-pointer overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800/80 bg-white dark:bg-slate-900/80 shadow-md shadow-slate-950/60 backdrop-blur-xl transition hover:border-brand-400/70 hover:bg-slate-900 sm:flex-row"
               >
                 <div className="relative h-48 w-full flex-none overflow-hidden sm:h-28 sm:w-28">
                   <img
@@ -455,10 +457,10 @@ const FeaturedPlots: React.FC = () => {
 
                 <div className="flex flex-1 flex-col justify-between px-3 py-2.5 sm:px-3.5 sm:py-3">
                   <div className="space-y-1">
-                    <h3 className="line-clamp-1 text-sm font-semibold text-slate-50">
+                    <h3 className="line-clamp-1 text-sm font-semibold text-slate-900 dark:text-white">
                       {plot.name}
                     </h3>
-                    <p className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-400">
+                    <p className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-600 dark:text-slate-400">
                       <MapPin className="h-3 w-3 text-slate-500" />
                       {plot.location}
                     </p>
@@ -478,7 +480,7 @@ const FeaturedPlots: React.FC = () => {
                         <span className="inline">Verified</span>
                       </div>
                       <div className="flex flex-col text-right">
-                        <span className="text-slate-400">From</span>
+                        <span className="text-slate-600 dark:text-slate-400">From</span>
                         <span className="text-sm font-semibold text-emerald-300">
                           {plot.price}
                         </span>
@@ -490,7 +492,7 @@ const FeaturedPlots: React.FC = () => {
             ))}
         </div>
 
-        <p className="mt-4 text-[11px] text-slate-500 sm:text-xs">
+        <p className="mt-4 text-[11px] text-slate-600 dark:text-slate-500 sm:text-xs">
           All plots undergo title, zoning and access checks by our in-house land team before being
           listed.
         </p>
@@ -742,13 +744,13 @@ const SellForm: React.FC = () => {
   };
 
   return (
-    <section className="mx-auto max-w-3xl rounded-3xl border border-slate-800/70 bg-slate-950/60 p-5 text-sm text-slate-100 shadow-soft-2xl backdrop-blur-xl sm:p-7">
+    <section className="mx-auto max-w-3xl rounded-3xl border border-slate-200 dark:border-slate-800/70 bg-white dark:bg-slate-950/60 p-5 text-sm text-slate-900 dark:text-slate-100 shadow-soft-2xl backdrop-blur-xl sm:p-7">
       <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
             List your land
           </p>
-          <h1 className="mt-2 text-xl font-semibold tracking-tight text-slate-50 sm:text-2xl">
+          <h1 className="mt-2 text-xl font-semibold tracking-tight text-slate-900 dark:text-white sm:text-2xl">
             Share your parcel with vetted buyers.
           </h1>
         </div>
@@ -774,70 +776,70 @@ const SellForm: React.FC = () => {
       <form onSubmit={handleSubmit} className="mt-6 space-y-6">
         {step === 1 && (
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-slate-100">Step 1 · Basic info</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Step 1 · Basic info</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="text-xs font-medium text-slate-300">Your name</label>
+                <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Your name</label>
                 <input
                   type="text"
                   required
                   value={state.ownerName}
                   onChange={e => onChange('ownerName')(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
+                  className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/80 px-3 py-2 text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
                   placeholder="Jane Doe"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-300">Email</label>
+                <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Email</label>
                 <input
                   type="email"
                   required
                   value={state.ownerEmail}
                   onChange={e => onChange('ownerEmail')(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
+                  className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/80 px-3 py-2 text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
                   placeholder="you@example.com"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-300">Phone / WhatsApp</label>
+                <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Phone / WhatsApp</label>
                 <input
                   type="tel"
                   value={state.ownerPhone}
                   onChange={e => onChange('ownerPhone')(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
+                  className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/80 px-3 py-2 text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
                   placeholder="+1 555 000 0000"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-300">Parcel name</label>
+                <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Parcel name</label>
                 <input
                   type="text"
                   required
                   value={state.parcelName}
                   onChange={e => onChange('parcelName')(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
+                  className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/80 px-3 py-2 text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
                   placeholder="Cedar Ridge Homestead"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-300">Location</label>
+                <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Location</label>
                 <input
                   type="text"
                   required
                   value={state.location}
                   onChange={e => onChange('location')(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/80 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
                   placeholder="City / region"
                 />
               </div>
               <div>
-                <label className="text-xs font-medium text-slate-300">Size</label>
+                <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Size</label>
                 <input
                   type="text"
                   required
                   value={state.size}
                   onChange={e => onChange('size')(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/80 px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
                   placeholder="e.g. 2.5 acres"
                 />
               </div>
@@ -847,17 +849,17 @@ const SellForm: React.FC = () => {
 
         {step === 2 && (
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-slate-100">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">
               Step 2 · Description & neighborhood
             </h2>
             <div>
-              <label className="text-xs font-medium text-slate-300">Describe your land</label>
+              <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Describe your land</label>
               <textarea
                 required
                 value={state.description}
                 onChange={e => onChange('description')(e.target.value)}
                 rows={4}
-                className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
+                className="mt-1 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/80 px-3 py-2 text-base text-slate-900 dark:text-white placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
                 placeholder="Access, zoning, utilities, topography, nearby landmarks..."
               />
             </div>
@@ -885,13 +887,13 @@ const SellForm: React.FC = () => {
 
         {step === 3 && (
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-slate-100">Step 3 · Media upload</h2>
-            <p className="text-xs text-slate-400">
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Step 3 · Media upload</h2>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
               Add a hero image or short drone clip. We&apos;ll store this securely and use it on
               your listing.
             </p>
             <div>
-              <label className="text-xs font-medium text-slate-300">Image / video</label>
+              <label className="text-xs font-medium text-slate-600 dark:text-slate-400">Image / video</label>
               <input
                 type="file"
                 accept="image/*,video/*"
@@ -899,7 +901,7 @@ const SellForm: React.FC = () => {
                 className="mt-2 w-full text-xs text-slate-300 file:mr-3 file:rounded-full file:border-0 file:bg-slate-800 file:px-3 file:py-1.5 file:text-xs file:font-medium file:text-slate-100 hover:file:bg-slate-700"
               />
               {state.mediaFile && (
-                <p className="mt-1 text-[11px] text-slate-400">
+                <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400">
                   Selected: <span className="font-medium">{state.mediaFile.name}</span>
                 </p>
               )}
@@ -1414,6 +1416,3 @@ const AdminPage: React.FC = () => {
 };
 
 export default App;
-
-
-
