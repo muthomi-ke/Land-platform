@@ -104,6 +104,8 @@ export const Investments: React.FC = () => {
     []
   );
 
+  const [venturesAgree, setVenturesAgree] = React.useState(false);
+
   return (
     <div className="mx-auto w-full max-w-6xl">
       <motion.section
@@ -419,15 +421,18 @@ export const Investments: React.FC = () => {
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
-                <a
-                  href={WHATSAPP_LENDING}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 shadow-md shadow-emerald-500/25 hover:bg-emerald-400"
+                <button
+                  type="button"
+                  disabled={!venturesAgree}
+                  onClick={() => {
+                    if (!venturesAgree) return;
+                    window.open(WHATSAPP_LENDING, '_blank', 'noopener,noreferrer');
+                  }}
+                  className="inline-flex items-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 shadow-md shadow-emerald-500/25 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   <MessageCircle className="h-4 w-4" />
                   Join the Lending Group
-                </a>
+                </button>
                 <a
                   href={EMAIL_CONTACT}
                   className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold text-slate-900 shadow-soft-2xl backdrop-blur-xl transition hover:bg-white/15 dark:text-slate-100"
@@ -436,6 +441,24 @@ export const Investments: React.FC = () => {
                   Email
                 </a>
               </div>
+            </div>
+
+            <div className="mt-5 rounded-3xl border border-[#FFD37A]/20 bg-black/30 p-4 text-xs text-slate-200 shadow-soft-2xl backdrop-blur-xl">
+              <label className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={venturesAgree}
+                  onChange={e => setVenturesAgree(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 accent-emerald-400"
+                />
+                <span>
+                  I agree to the{' '}
+                  <a href="/legal" className="text-[#FFD37A] hover:underline">
+                    Legal Disclaimer
+                  </a>
+                  . <span className="text-slate-400">(Capital at risk · not CMA regulated.)</span>
+                </span>
+              </label>
             </div>
           </GlassCard>
 

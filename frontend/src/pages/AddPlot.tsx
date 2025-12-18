@@ -43,6 +43,7 @@ export const AddPlot: React.FC<Props> = ({ session }) => {
   const [success, setSuccess] = React.useState<string | null>(null);
   const [waitingVerify, setWaitingVerify] = React.useState(false);
   const [verifiedCelebration, setVerifiedCelebration] = React.useState(false);
+  const [agreedLegal, setAgreedLegal] = React.useState(false);
 
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
   const { isLoaded } = useJsApiLoader({
@@ -66,6 +67,11 @@ export const AddPlot: React.FC<Props> = ({ session }) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+
+    if (!agreedLegal) {
+      setError('Please agree to the Legal Disclaimer before publishing.');
+      return;
+    }
 
     if (!session?.user) {
       navigate('/auth');
@@ -338,13 +344,31 @@ export const AddPlot: React.FC<Props> = ({ session }) => {
           </button>
           <button
             type="submit"
-            disabled={submitting}
+            disabled={submitting || !agreedLegal}
             className="inline-flex h-10 items-center gap-2 rounded-full bg-gradient-to-tr from-brand-500 to-emerald-400 px-6 text-xs font-semibold text-slate-950 shadow-md shadow-emerald-500/30 transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {submitting ? 'Publishing…' : 'Publish listing'}
           </button>
         </div>
       </form>
+
+      <div className="mt-4 rounded-3xl border border-[#FFD37A]/20 bg-black/30 p-4 text-xs text-slate-200 shadow-soft-2xl backdrop-blur-xl">
+        <label className="flex items-start gap-3">
+          <input
+            type="checkbox"
+            checked={agreedLegal}
+            onChange={e => setAgreedLegal(e.target.checked)}
+            className="mt-0.5 h-4 w-4 accent-emerald-400"
+          />
+          <span>
+            I agree to the{' '}
+            <a href="/legal" className="text-[#FFD37A] hover:underline">
+              Legal Disclaimer
+            </a>
+            .
+          </span>
+        </label>
+      </div>
 
       {/* Verification payment placeholder */}
       <div className="mt-8 rounded-3xl border border-emerald-400/20 bg-emerald-500/10 p-5 shadow-soft-2xl backdrop-blur-xl">

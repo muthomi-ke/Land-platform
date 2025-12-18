@@ -25,6 +25,10 @@ import Home from './pages/Home';
 import Investments from './pages/Investments';
 import AddPlot from './pages/AddPlot';
 import PlotDetails from './pages/PlotDetails';
+import Team from './pages/Team';
+import FAQ from './pages/FAQ';
+import Legal from './pages/Legal';
+import Footer from './components/Footer';
 
 type Plot = {
   id: number;
@@ -101,6 +105,9 @@ const App: React.FC = () => {
             <Route path="/" element={<Home />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/investments" element={<Investments />} />
+            <Route path="/team" element={<Team />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/legal" element={<Legal />} />
             <Route path="/add-plot" element={<AddPlot session={session} />} />
             <Route path="/plots/:id" element={<PlotDetails />} />
             <Route path="/get-started" element={<GetStartedPage />} />
@@ -115,6 +122,8 @@ const App: React.FC = () => {
             <FloatingCloud />
           </>
         )}
+
+        <Footer />
       </div>
     </div>
   );
@@ -167,6 +176,22 @@ const NavBar: React.FC<{ session: Session | null }> = ({ session }) => {
             }`}
           >
             Investment
+          </Link>
+          <Link
+            to="/team"
+            className={`transition hover:text-slate-900 dark:hover:text-slate-50 ${
+              location.pathname === '/team' ? 'text-slate-900 dark:text-slate-50' : ''
+            }`}
+          >
+            Team
+          </Link>
+          <Link
+            to="/faq"
+            className={`transition hover:text-slate-900 dark:hover:text-slate-50 ${
+              location.pathname === '/faq' ? 'text-slate-900 dark:text-slate-50' : ''
+            }`}
+          >
+            FAQ
           </Link>
           {isAuthed && (
             <Link
@@ -262,6 +287,26 @@ const NavBar: React.FC<{ session: Session | null }> = ({ session }) => {
             >
               Investment
               <span className="text-[10px] uppercase tracking-wider text-slate-500">KES</span>
+            </Link>
+            <Link
+              to="/team"
+              onClick={() => setIsMenuOpen(false)}
+              className={`flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 ${
+                location.pathname === '/team' ? 'text-emerald-400 font-medium' : ''
+              }`}
+            >
+              Team
+              <span className="text-[10px] uppercase tracking-wider text-slate-500">Elite</span>
+            </Link>
+            <Link
+              to="/faq"
+              onClick={() => setIsMenuOpen(false)}
+              className={`flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2 ${
+                location.pathname === '/faq' ? 'text-emerald-400 font-medium' : ''
+              }`}
+            >
+              FAQ
+              <span className="text-[10px] uppercase tracking-wider text-slate-500">Help</span>
             </Link>
             {isAuthed && (
               <Link
