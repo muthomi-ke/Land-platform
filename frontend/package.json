@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@react-google-maps/api": "^2.20.8",
+    "@react-pdf-viewer/core": "^3.12.0",
     "@smileid/web-components": "^11.0.3",
     "@supabase/auth-ui-react": "^0.4.7",
     "@supabase/auth-ui-shared": "^0.1.8",
@@ -23,6 +24,7 @@
     "lucide-react": "^0.462.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-pdf-viewer": "^0.1.0",
     "react-router-dom": "^7.10.1",
     "vite": "^6.0.0"
   },

@@ -2,7 +2,27 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { GoogleMap, MarkerF, useJsApiLoader } from '@react-google-maps/api';
-import { ExternalLink, MapPin } from 'lucide-react';
+import { Car, ExternalLink, MapPin } from 'lucide-react';
+
+type RideMetrics = {
+  distanceKm: number;
+  durationMins: number;
+};
+
+const BASE_FARE_KES = 220;
+const PER_KM_KES = 35;
+const PER_MIN_KES = 5;
+const MIN_FARE_KES = 250;
+
+function calculateFareKes(distanceKm: number, durationMins: number): number {
+  const raw = BASE_FARE_KES + distanceKm * PER_KM_KES + durationMins * PER_MIN_KES;
+  return Math.max(MIN_FARE_KES, Math.round(raw));
+}
+
+export function calculateFareRange(distanceKm: number, durationMins: number): { low: number; high: number } {
+  const calc = calculateFareKes(distanceKm, durationMins);
+  return { low: Math.max(MIN_FARE_KES, calc - 50), high: calc + 50 };
+}
 
 type Plot = {
   id: number;
@@ -27,12 +47,67 @@ export const PlotDetails: React.FC = () => {
   const [plot, setPlot] = React.useState<Plot | null>(null);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+  const [ride, setRide] = React.useState<RideMetrics | null>(null);
+  const [rideError, setRideError] = React.useState<string | null>(null);
 
   const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script-details',
     googleMapsApiKey: googleMapsApiKey ?? ''
   });
+
+  // Fetch distance + duration from user's current location to plot (for ride & fare insights).
+  React.useEffect(() => {
+    const run = async () => {
+      setRide(null);
+      setRideError(null);
+
+      if (!isLoaded) return;
+      if (!plot?.lat || !plot?.lng) return;
+      if (!navigator.geolocation) {
+        setRideError('Geolocation not available to estimate ride distance.');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          try {
+            const origin = new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+            const destination = new google.maps.LatLng(plot.lat as number, plot.lng as number);
+            const svc = new google.maps.DistanceMatrixService();
+
+            svc.getDistanceMatrix(
+              {
+                origins: [origin],
+                destinations: [destination],
+                travelMode: google.maps.TravelMode.DRIVING
+              },
+              (resp, status) => {
+                if (status !== 'OK' || !resp?.rows?.[0]?.elements?.[0]) {
+                  setRideError('Unable to estimate distance right now.');
+                  return;
+                }
+                const el = resp.rows[0].elements[0];
+                if (el.status !== 'OK' || !el.distance?.value || !el.duration?.value) {
+                  setRideError('Distance estimate unavailable for this location.');
+                  return;
+                }
+                const distanceKm = el.distance.value / 1000;
+                const durationMins = el.duration.value / 60;
+                setRide({ distanceKm, durationMins });
+              }
+            );
+          } catch {
+            setRideError('Distance estimate failed.');
+          }
+        },
+        () => setRideError('Enable location access to estimate fares.'),
+        { enableHighAccuracy: true, timeout: 7000 }
+      );
+    };
+
+    void run();
+  }, [isLoaded, plot?.lat, plot?.lng]);
 
   React.useEffect(() => {
     const fetchPlot = async () => {
@@ -75,9 +150,12 @@ export const PlotDetails: React.FC = () => {
     return `https://wa.me/${digits}?text=${encodeURIComponent(msg)}`;
   }, [plot?.name, plot?.seller_phone]);
 
-  const uberHref = plot?.lat != null && plot?.lng != null
-    ? `https://m.uber.com/ul/?action=setPickup&dropoff[latitude]=${plot.lat}&dropoff[longitude]=${plot.lng}&dropoff[nickname]=${encodeURIComponent('Plot_Location')}`
-    : null;
+  const uberHref =
+    plot?.lat != null && plot?.lng != null
+      ? `https://m.uber.com/ul/?action=setPickup&dropoff[latitude]=${plot.lat}&dropoff[longitude]=${plot.lng}&dropoff[nickname]=${encodeURIComponent(
+          plot.name
+        )}`
+      : null;
 
   const boltHref = plot?.lat != null && plot?.lng != null
     ? `https://bolt.eu/ride/?lat=${plot.lat}&lng=${plot.lng}`
@@ -163,28 +241,6 @@ export const PlotDetails: React.FC = () => {
                 Chat on WhatsApp
               </span>
             </a>
-
-            {uberHref && (
-              <a
-                href={uberHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-2xl bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-black/90"
-              >
-                Request Uber
-              </a>
-            )}
-
-            {boltHref && (
-              <a
-                href={boltHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500"
-              >
-                Request Bolt
-              </a>
-            )}
           </div>
         </div>
 
@@ -197,6 +253,78 @@ export const PlotDetails: React.FC = () => {
             ))}
           </div>
         )}
+      </section>
+
+      <section className="rounded-3xl border border-white/15 bg-white/10 p-6 shadow-soft-2xl backdrop-blur-xl sm:p-8">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+              Transport &amp; Logistics
+            </p>
+            <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+              Estimated fares based on standard rates. Real-time prices may vary in-app due to traffic or surge.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <div className="rounded-3xl border border-emerald-400/20 bg-emerald-500/10 p-5 ring-1 ring-emerald-400/10">
+            <div className="flex items-center gap-2 text-xs text-emerald-100">
+              <Car className="h-4 w-4" />
+              Fare estimate (KES)
+            </div>
+            <div className="mt-2 text-2xl font-semibold tracking-tight text-emerald-100">
+              {ride ? (
+                <>
+                  {calculateFareRange(ride.distanceKm, ride.durationMins).low.toLocaleString()}–{calculateFareRange(ride.distanceKm, ride.durationMins).high.toLocaleString()}
+                </>
+              ) : (
+                <span className="text-slate-200">{rideError ? '—' : 'Calculating…'}</span>
+              )}
+            </div>
+            <div className="mt-2 text-xs text-slate-600 dark:text-slate-300">
+              {ride ? (
+                <>
+                  ~{ride.distanceKm.toFixed(1)} km · ~{Math.round(ride.durationMins)} mins
+                </>
+              ) : rideError ? (
+                rideError
+              ) : (
+                'Using your current location'
+              )}
+            </div>
+          </div>
+
+          <div className="sm:col-span-2 rounded-3xl border border-white/15 bg-white/10 p-5 ring-1 ring-white/10">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <button
+                type="button"
+                disabled={!uberHref}
+                onClick={() => {
+                  if (!uberHref) return;
+                  window.open(uberHref, '_blank', 'noopener,noreferrer');
+                }}
+                className="inline-flex items-center justify-center rounded-2xl bg-black px-4 py-2 text-sm font-semibold text-white hover:bg-black/90 disabled:opacity-60"
+              >
+                Book on Uber
+              </button>
+              <button
+                type="button"
+                disabled={!boltHref}
+                onClick={() => {
+                  if (!boltHref) return;
+                  window.open(boltHref, '_blank', 'noopener,noreferrer');
+                }}
+                className="inline-flex items-center justify-center rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60"
+              >
+                Book on Bolt
+              </button>
+            </div>
+            <p className="mt-3 text-[11px] text-slate-600 dark:text-slate-400">
+              Uber uses pickup from your current location. Bolt opens a direct ride deep link to the plot pin.
+            </p>
+          </div>
+        </div>
       </section>
 
       <section className="rounded-3xl border border-emerald-400/25 bg-white/10 p-6 shadow-soft-2xl backdrop-blur-xl sm:p-8">
