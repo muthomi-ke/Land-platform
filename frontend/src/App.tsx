@@ -48,11 +48,11 @@ const App: React.FC = () => {
   const location = useLocation();
 
   return (
-    <div className="min-h-screen text-slate-50">
+    <div className="min-h-screen text-slate-50 dark:text-slate-50 text-slate-900 bg-white dark:bg-slate-950 transition-colors duration-300">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
         <div className="pointer-events-none absolute -left-40 top-[-10rem] h-[28rem] w-[28rem] rounded-full bg-brand-500/20 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-12rem] right-[-5rem] h-[26rem] w-[26rem] rounded-full bg-emerald-500/10 blur-3xl" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-slate-900 via-slate-950/40 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-slate-900 via-slate-950/40 to-transparent dark:from-slate-900 dark:via-slate-950/40 dark:to-transparent from-slate-100 via-white to-transparent" />
       </div>
 
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-4 pb-16 pt-6 sm:px-6 lg:px-10">
@@ -86,73 +86,153 @@ const App: React.FC = () => {
   );
 };
 
+import { ThemeToggle } from './components/ThemeToggle';
+
 const NavBar: React.FC = () => {
   const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   return (
-    <motion.header
-      initial={{ y: -16, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="flex items-center justify-between rounded-full border border-slate-800/70 bg-slate-900/80 px-4 py-2 shadow-lg shadow-slate-950/40 backdrop-blur-xl sm:px-5"
-    >
-      <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-brand-500 to-emerald-400 shadow-md shadow-emerald-500/40">
-          <Leaf className="h-4 w-4 text-slate-950" />
+    <>
+      <motion.header
+        initial={{ y: -16, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-50 flex items-center justify-between rounded-full border border-slate-800/70 bg-slate-900/80 px-4 py-2 shadow-lg shadow-slate-950/40 backdrop-blur-xl sm:px-5 dark:border-slate-800/70 dark:bg-slate-900/80 bg-white/80 border-slate-200/70"
+      >
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-tr from-brand-500 to-emerald-400 shadow-md shadow-emerald-500/40">
+            <Leaf className="h-4 w-4 text-slate-950" />
+          </div>
+          <div className="leading-tight">
+            <span className="text-sm font-semibold tracking-tight sm:text-base">LandPortal</span>
+            <p className="text-[10px] text-slate-400 sm:text-xs">Curated land, anywhere.</p>
+          </div>
         </div>
-        <div className="leading-tight">
-          <span className="text-sm font-semibold tracking-tight sm:text-base">LandPortal</span>
-          <p className="text-[10px] text-slate-400 sm:text-xs">Curated land, anywhere.</p>
+
+        {/* Desktop Nav */}
+        <nav className="hidden items-center gap-6 text-xs text-slate-300 sm:flex sm:text-sm">
+          <Link
+            to="/"
+            className={`transition hover:text-slate-50 ${
+              location.pathname === '/' ? 'text-slate-50' : ''
+            }`}
+          >
+            Discover
+          </Link>
+          <button
+            type="button"
+            className="transition hover:text-slate-50"
+            // Placeholder for future investment route
+          >
+            Investment
+          </button>
+          <Link
+            to="/sell"
+            className={`transition hover:text-slate-50 ${
+              location.pathname === '/sell' ? 'text-slate-50' : ''
+            }`}
+          >
+            Sell land
+          </Link>
+          <Link
+            to="/admin"
+            className={`transition hover:text-slate-50 ${
+              location.pathname === '/admin' ? 'text-slate-50' : ''
+            }`}
+          >
+            Admin
+          </Link>
+        </nav>
+
+        <div className="flex items-center gap-2">
+          <div className="hidden sm:block">
+            <ThemeToggle />
+          </div>
+          <button className="hidden rounded-full border border-slate-700 px-3 py-1 text-xs font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm">
+            Log in
+          </button>
+          <Link
+            to="/get-started"
+            className="hidden items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-950 shadow-md shadow-slate-950/40 transition hover:bg-slate-200 sm:inline-flex sm:px-4 sm:text-sm"
+          >
+            Get started
+            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+          </Link>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-slate-200 sm:hidden"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
         </div>
-      </div>
+      </motion.header>
 
-      <nav className="hidden items-center gap-6 text-xs text-slate-300 sm:flex sm:text-sm">
-        <Link
-          to="/"
-          className={`transition hover:text-slate-50 ${
-            location.pathname === '/' ? 'text-slate-50' : ''
-          }`}
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="absolute inset-x-0 top-20 z-40 mx-4 rounded-3xl border border-slate-800/70 bg-slate-900/95 p-6 shadow-2xl backdrop-blur-xl sm:hidden"
         >
-          Discover
-        </Link>
-        <button
-          type="button"
-          className="transition hover:text-slate-50"
-          // Placeholder for future investment route
-        >
-          Investment
-        </button>
-        <Link
-          to="/sell"
-          className={`transition hover:text-slate-50 ${
-            location.pathname === '/sell' ? 'text-slate-50' : ''
-          }`}
-        >
-          Sell land
-        </Link>
-        <Link
-          to="/admin"
-          className={`transition hover:text-slate-50 ${
-            location.pathname === '/admin' ? 'text-slate-50' : ''
-          }`}
-        >
-          Admin
-        </Link>
-      </nav>
-
-      <div className="flex items-center gap-2">
-        <button className="hidden rounded-full border border-slate-700 px-3 py-1 text-xs font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800 sm:inline-flex sm:px-4 sm:py-1.5 sm:text-sm">
-          Log in
-        </button>
-        <Link
-          to="/get-started"
-          className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-950 shadow-md shadow-slate-950/40 transition hover:bg-slate-200 sm:px-4 sm:text-sm"
-        >
-          Get started
-          <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-        </Link>
-      </div>
-    </motion.header>
+          <nav className="flex flex-col gap-4 text-sm text-slate-300">
+            <Link
+              to="/"
+              onClick={() => setIsMenuOpen(false)}
+              className={`flex items-center justify-between border-b border-slate-800 pb-2 ${
+                location.pathname === '/' ? 'text-emerald-400 font-medium' : ''
+              }`}
+            >
+              Discover
+              <TrendingUp className="h-4 w-4" />
+            </Link>
+            <button className="flex items-center justify-between border-b border-slate-800 pb-2 text-left">
+              Investment
+              <span className="text-[10px] uppercase tracking-wider text-slate-500">Coming soon</span>
+            </button>
+            <Link
+              to="/sell"
+              onClick={() => setIsMenuOpen(false)}
+              className={`flex items-center justify-between border-b border-slate-800 pb-2 ${
+                location.pathname === '/sell' ? 'text-emerald-400 font-medium' : ''
+              }`}
+            >
+              Sell land
+              <Edit3 className="h-4 w-4" />
+            </Link>
+            <Link
+              to="/admin"
+              onClick={() => setIsMenuOpen(false)}
+              className={`flex items-center justify-between border-b border-slate-800 pb-2 ${
+                location.pathname === '/admin' ? 'text-emerald-400 font-medium' : ''
+              }`}
+            >
+              Admin
+              <Lock className="h-4 w-4" />
+            </Link>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-slate-400">Theme</span>
+              <ThemeToggle />
+            </div>
+            <div className="mt-2 grid grid-cols-2 gap-3">
+              <button className="rounded-xl border border-slate-700 py-2.5 text-center font-medium text-slate-200 hover:bg-slate-800">
+                Log in
+              </button>
+              <Link
+                to="/get-started"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center justify-center gap-2 rounded-xl bg-slate-50 py-2.5 font-semibold text-slate-950"
+              >
+                Get started
+              </Link>
+            </div>
+          </nav>
+        </motion.div>
+      )}
+    </>
   );
 };
 
@@ -246,7 +326,7 @@ const SearchCard: React.FC = () => {
             <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
               Use case
             </label>
-            <select className="mt-1 w-full rounded-xl bg-slate-900/80 px-3 py-2 text-xs text-slate-200 ring-1 ring-slate-700 focus:outline-none focus:ring-brand-400 sm:text-sm">
+            <select className="mt-1 w-full rounded-xl bg-slate-900/80 px-3 py-2 text-base text-slate-200 ring-1 ring-slate-700 focus:outline-none focus:ring-brand-400 sm:text-sm">
               <option>Homestead</option>
               <option>Investment</option>
               <option>Farm & ranch</option>
@@ -257,7 +337,7 @@ const SearchCard: React.FC = () => {
             <label className="text-[11px] font-medium uppercase tracking-[0.12em] text-slate-400">
               Budget
             </label>
-            <select className="mt-1 w-full rounded-xl bg-slate-900/80 px-3 py-2 text-xs text-slate-200 ring-1 ring-slate-700 focus:outline-none focus:ring-brand-400 sm:text-sm">
+            <select className="mt-1 w-full rounded-xl bg-slate-900/80 px-3 py-2 text-base text-slate-200 ring-1 ring-slate-700 focus:outline-none focus:ring-brand-400 sm:text-sm">
               <option>Up to $150k</option>
               <option>$150k – $350k</option>
               <option>$350k – $750k</option>
@@ -354,9 +434,9 @@ const FeaturedPlots: React.FC = () => {
                 initial={{ opacity: 0, y: 18 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.25 + index * 0.08, duration: 0.5 }}
-                className="group flex cursor-pointer overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/80 shadow-md shadow-slate-950/60 backdrop-blur-xl transition hover:border-brand-400/70 hover:bg-slate-900"
+                className="group flex flex-col cursor-pointer overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/80 shadow-md shadow-slate-950/60 backdrop-blur-xl transition hover:border-brand-400/70 hover:bg-slate-900 sm:flex-row"
               >
-                <div className="relative h-28 w-28 flex-none overflow-hidden sm:h-28 sm:w-28">
+                <div className="relative h-48 w-full flex-none overflow-hidden sm:h-28 sm:w-28">
                   <img
                     src={
                       plot.image_url ||
@@ -390,12 +470,12 @@ const FeaturedPlots: React.FC = () => {
                       <span className="font-medium text-slate-100">{plot.size}</span>
                     </div>
                     <div className="flex flex-1 items-center justify-end gap-2">
-                      <div className="hidden items-center gap-1 rounded-full border border-sky-300/60 bg-gradient-to-r from-sky-100 via-sky-50 to-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-sky-900 shadow-sm shadow-sky-200/60 sm:inline-flex">
+                      <div className="inline-flex items-center gap-1 rounded-full border border-sky-300/60 bg-gradient-to-r from-sky-100 via-sky-50 to-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-sky-900 shadow-sm shadow-sky-200/60">
                         <div className="relative flex items-center">
                           <BadgeCheck className="h-3.5 w-3.5 text-sky-500" />
                           <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-70 mix-blend-screen animate-shimmer" />
                         </div>
-                        <span>Verified title</span>
+                        <span className="inline">Verified</span>
                       </div>
                       <div className="flex flex-col text-right">
                         <span className="text-slate-400">From</span>
@@ -703,7 +783,7 @@ const SellForm: React.FC = () => {
                   required
                   value={state.ownerName}
                   onChange={e => onChange('ownerName')(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
                   placeholder="Jane Doe"
                 />
               </div>
@@ -714,7 +794,7 @@ const SellForm: React.FC = () => {
                   required
                   value={state.ownerEmail}
                   onChange={e => onChange('ownerEmail')(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
                   placeholder="you@example.com"
                 />
               </div>
@@ -724,7 +804,7 @@ const SellForm: React.FC = () => {
                   type="tel"
                   value={state.ownerPhone}
                   onChange={e => onChange('ownerPhone')(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
                   placeholder="+1 555 000 0000"
                 />
               </div>
@@ -735,7 +815,7 @@ const SellForm: React.FC = () => {
                   required
                   value={state.parcelName}
                   onChange={e => onChange('parcelName')(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
+                  className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
                   placeholder="Cedar Ridge Homestead"
                 />
               </div>
@@ -777,7 +857,7 @@ const SellForm: React.FC = () => {
                 value={state.description}
                 onChange={e => onChange('description')(e.target.value)}
                 rows={4}
-                className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
+                className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
                 placeholder="Access, zoning, utilities, topography, nearby landmarks..."
               />
             </div>
@@ -843,7 +923,7 @@ const SellForm: React.FC = () => {
           <button
             type="button"
             onClick={step === 1 ? () => navigate('/') : handleBack}
-            className="text-xs text-slate-400 hover:text-slate-200"
+            className="h-10 px-4 text-xs text-slate-400 hover:text-slate-200"
           >
             {step === 1 ? 'Cancel' : 'Back'}
           </button>
@@ -852,7 +932,7 @@ const SellForm: React.FC = () => {
               <button
                 type="button"
                 onClick={handleNext}
-                className="rounded-full border border-slate-700 px-4 py-2 text-xs font-semibold text-slate-200 hover:border-slate-500 hover:bg-slate-800"
+                className="h-10 rounded-full border border-slate-700 px-6 text-xs font-semibold text-slate-200 hover:border-slate-500 hover:bg-slate-800"
               >
                 Next
               </button>
@@ -861,7 +941,7 @@ const SellForm: React.FC = () => {
               <button
                 type="submit"
                 disabled={submitting}
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-tr from-brand-500 to-emerald-400 px-5 py-2 text-xs font-semibold text-slate-950 shadow-md shadow-emerald-500/40 transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex h-10 items-center gap-2 rounded-full bg-gradient-to-tr from-brand-500 to-emerald-400 px-6 text-xs font-semibold text-slate-950 shadow-md shadow-emerald-500/40 transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {submitting ? 'Submitting...' : 'Submit for review'}
               </button>
@@ -1170,7 +1250,7 @@ const AdminPage: React.FC = () => {
               required
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-slate-700 bg-slate-900/80 px-3 py-2 text-base text-slate-50 placeholder:text-slate-500 focus:border-brand-400 focus:outline-none sm:text-sm"
               placeholder="••••••••"
             />
           </div>
