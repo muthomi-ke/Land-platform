@@ -92,7 +92,11 @@ export const PlotCard: React.FC<Props> = ({ plot }) => {
           <div className="text-right">
             <div className="text-[11px] text-slate-500">Price (KES)</div>
             <div className="text-sm font-semibold text-emerald-300">
-              {typeof plot.price === 'number' ? plot.price.toLocaleString() : plot.price}
+              {plot.price === 0 || !plot.price ? (
+                <span className="text-slate-400">Price on Request</span>
+              ) : (
+                `KES ${new Intl.NumberFormat().format(plot.price)}`
+              )}
             </div>
           </div>
         </div>

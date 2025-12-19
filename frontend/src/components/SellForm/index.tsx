@@ -218,12 +218,17 @@ export const SellForm: React.FC = () => {
         mediaUrls = await uploadFiles(state.mediaFiles);
       }
       
+      // Sanitize price - handle 'TBD' or empty cases
+      const numericPrice = state.price.trim().toLowerCase() === 'tbd' 
+        ? 0 
+        : parseInt(state.price.toString().replace(/[^0-9]/g, '')) || 0;
+      
       // Prepare plot data
       const plotData = {
         name: state.parcelName,
         location: state.location,
         size: state.size,
-        price: parsePrice(state.price).toString(),
+        price: numericPrice, // Now a number, not a string
         description: state.description,
         neighborhood_score: state.neighborhoodScore,
         owner_name: state.ownerName,
