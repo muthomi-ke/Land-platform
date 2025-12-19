@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { PropertyCategory, PropertyStatus, SellerType, SellFormState } from './types';
 import { supabase } from '../../lib/supabaseClient';
 import { SellFormState, SellerType } from './types';
 import { uploadFiles, formatPrice, parsePrice, validateEmail, validatePhone } from './utils';

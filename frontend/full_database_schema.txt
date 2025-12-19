@@ -1,0 +1,35 @@
+| table_name | column_name        | data_type                | is_nullable | column_default    |
+| ---------- | ------------------ | ------------------------ | ----------- | ----------------- |
+| leads      | id                 | uuid                     | NO          | gen_random_uuid() |
+| leads      | plot_id            | uuid                     | YES         | null              |
+| leads      | seller_id          | uuid                     | YES         | null              |
+| leads      | buyer_id           | uuid                     | YES         | null              |
+| leads      | created_at         | timestamp with time zone | YES         | now()             |
+| plots      | id                 | uuid                     | NO          | gen_random_uuid() |
+| plots      | created_at         | timestamp with time zone | YES         | now()             |
+| plots      | owner_id           | uuid                     | YES         | null              |
+| plots      | title              | text                     | YES         | null              |
+| plots      | description        | text                     | YES         | null              |
+| plots      | price              | bigint                   | NO          | null              |
+| plots      | location_name      | text                     | YES         | null              |
+| plots      | coordinates        | point                    | YES         | null              |
+| plots      | image_urls         | ARRAY                    | YES         | '{}'::text[]      |
+| plots      | video_url          | text                     | YES         | null              |
+| plots      | is_verified        | boolean                  | YES         | false             |
+| plots      | is_featured        | boolean                  | YES         | false             |
+| plots      | neighborhood_score | integer                  | YES         | 5                 |
+| plots      | status             | text                     | YES         | 'active'::text    |
+| plots      | name               | text                     | YES         | null              |
+| plots      | location           | text                     | YES         | null              |
+| plots      | size               | text                     | YES         | null              |
+| plots      | tag                | text                     | YES         | null              |
+| plots      | image_url          | text                     | YES         | null              |
+| plots      | owner_name         | text                     | YES         | null              |
+| plots      | owner_email        | text                     | YES         | null              |
+| plots      | owner_phone        | text                     | YES         | null              |
+| plots      | seller_id          | uuid                     | YES         | null              |
+| profiles   | id                 | uuid                     | NO          | null              |
+| profiles   | full_name          | text                     | YES         | null              |
+| profiles   | whatsapp_number    | text                     | YES         | null              |
+| profiles   | is_admin           | boolean                  | YES         | false             |
+| profiles   | created_at         | timestamp with time zone | YES         | now()             |

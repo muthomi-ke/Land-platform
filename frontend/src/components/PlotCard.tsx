@@ -4,19 +4,20 @@ import { supabase } from '../lib/supabaseClient';
 import { Link } from 'react-router-dom';
 
 export type Plot = {
-  id: number;
+  id: string; // Changed from number to string for UUID
   name: string;
   location: string;
   size: string;
   price: number;
   tag?: string;
-  image_url?: string;
+  image_url?: string; // Legacy field, prefer media_urls
   media_urls?: string[];
   category?: string;
   seller_id?: string | null;
   seller_phone?: string | null;
   lat?: number | null;
   lng?: number | null;
+  is_verified?: boolean;
 };
 
 type Props = {
@@ -26,20 +27,25 @@ type Props = {
 export const PlotCard: React.FC<Props> = ({ plot }) => {
   const onWhatsApp = async () => {
     try {
-      if (supabase) {
-        // Record lead first
+      if (supabase && plot.seller_id) {
+        // Record lead with proper typing
         await supabase.from('leads').insert({
           plot_id: plot.id,
-          seller_id: plot.seller_id ?? null
-        });
+          seller_id: plot.seller_id,
+          buyer_id: undefined, // Will use the default value from the database
+          created_at: new Date().toISOString()
+        } as any); // Type assertion to handle strict type checking
       }
-    } catch {
-      // ignore lead tracking failures; still open WhatsApp
+    } catch (error) {
+      console.error('Error recording lead:', error);
+      // Continue to open WhatsApp even if lead recording fails
     } finally {
       const phoneDigits = String(plot.seller_phone ?? '').replace(/[^\d]/g, '');
-      const msg = `I_am_interested_in_[${plot.name}]`;
-      const href = `https://wa.me/${phoneDigits}?text=${encodeURIComponent(msg)}`;
-      window.open(href, '_blank', 'noopener,noreferrer');
+      if (phoneDigits) {
+        const msg = `I_am_interested_in_[${plot.name}]`;
+        const href = `https://wa.me/${phoneDigits}?text=${encodeURIComponent(msg)}`;
+        window.open(href, '_blank', 'noopener,noreferrer');
+      }
     }
   };
 
